@@ -1,11 +1,20 @@
-import { ApolloServer, makeExecutableSchema } from "apollo-server";
-import { readFileSync } from "fs";
-import path from "path";
-import { executor } from "./executor";
-import resolvers from "./resolvers";
+import { ApolloServer, makeExecutableSchema } from 'apollo-server';
+import { mergeResolvers, mergeTypeDefs } from '@graphql-tools/merge';
+import { loadFilesSync } from '@graphql-tools/load-files';
+import { executor } from './executor';
+
+const resolversArray = loadFilesSync(`${__dirname}/resolvers`, {
+    extensions: ['ts', 'js'],
+});
+const typeDefsArray = loadFilesSync(`${__dirname}/schema/*.gql`);
+
+const resolvers = mergeResolvers(resolversArray);
+const typeDefs = mergeTypeDefs(typeDefsArray);
+
+console.log(1, typeDefsArray);
 
 const schema = makeExecutableSchema({
-  typeDefs: readFileSync(path.join(__dirname, "../schema.gql"), "utf-8"),
+  typeDefs,
   resolvers
 });
 const apollo = new ApolloServer({
@@ -14,5 +23,5 @@ const apollo = new ApolloServer({
 });
 
 apollo.listen({ port: 3000 }).then(() => {
-  console.log("Go to http://localhost:3000/graphql to run queries!");
+  console.log('Go to http://localhost:3000/graphql to run queries!');
 });
