@@ -16,11 +16,17 @@ ts-node src/server
 Go to `http://localhost:3000/graphql` to run queries.
 
 Sample query:
+
 ```
 query {
-  post(id: "post:1") {
-    title
-    author {
+  users {
+    ...on UserWeb {
+      name
+      posts {
+        title
+      }
+    }
+    ...on UserAdmin {
       name
     }
   }

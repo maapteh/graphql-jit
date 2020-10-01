@@ -6,7 +6,7 @@ import {
   compileQuery,
   CompilerOptions,
   isCompiledQuery
-} from "../../../";
+} from "graphql-jit";
 
 export const executor = (
   schema: GraphQLSchema,

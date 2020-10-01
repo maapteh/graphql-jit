@@ -10,7 +10,7 @@ const posts = [
     id: "post:2",
     title: "GraphQL-Jit a fast engine for GraphQL",
     author: {
-      id: "user:2"
+      id: "user:1"
     }
   }
 ];
@@ -19,6 +19,7 @@ const users = [
   {
     id: "user:1",
     name: "Boopathi",
+    type: "normal",
     posts: [
       {
         id: "post:1"
@@ -28,6 +29,7 @@ const users = [
   {
     id: "user:2",
     name: "Rui",
+    type: "admin",
     posts: [
       {
         id: "post:2"
@@ -44,12 +46,20 @@ function getPost(id: string) {
   return post;
 }
 
-function getUser(id: string) {
-  const user = users.find(user => user.id === id);
-  if (user == null) {
-    throw new Error(`User "${id}" not found`);
-  }
-  return user;
+async function getUser(id: string): Promise<any> {
+
+  return new Promise((resolve, reject) => {
+    let wait = setTimeout(() => {
+      clearTimeout(wait);
+      const user = users.find(user => user.id === id);
+      if (user == null) {
+        reject(null);
+      } else {
+        resolve(user)
+      }
+    }, 200)
+  });
+
 }
 
 export default {
@@ -57,7 +67,7 @@ export default {
     post(_: any, { id }: { id: string }) {
       return getPost(id);
     },
-    user(_: any, { id }: { id: string }) {
+    async user(_: any, { id }: { id: string }) {
       return getUser(id);
     },
     node(_: any, { id }: { id: string }) {
@@ -73,7 +83,12 @@ export default {
       return posts;
     },
     users() {
-      return users;
+      return new Promise((resolve, reject) => {
+        let wait = setTimeout(() => {
+          clearTimeout(wait);
+          resolve(users);
+        }, 200)
+      });
     }
   },
   Node: {
@@ -87,6 +102,10 @@ export default {
     }
   },
   User: {
+    __resolveType: (root: any) => (root.type === 'normal' ? 'UserWeb' : 'UserAdmin'),
+
+  },
+  UserWeb: {
     posts({ posts }: { posts: { id: string }[] }) {
       return posts.map(({ id }) => getPost(id));
     }

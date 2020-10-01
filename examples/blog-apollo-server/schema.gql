@@ -12,14 +12,23 @@ interface Node {
   id: ID!
 }
 
+union User = UserWeb | UserAdmin
+
 type Post implements Node {
   id: ID!
   title: String!
   author: User!
 }
 
-type User implements Node {
+type UserWeb implements Node {
   id: ID!
+  type: String!
   name: String!
   posts: [Post!]
+}
+
+type UserAdmin implements Node {
+  id: ID!
+  type: String!
+  name: String!
 }
