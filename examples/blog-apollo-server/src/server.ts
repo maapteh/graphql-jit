@@ -11,8 +11,6 @@ const typeDefsArray = loadFilesSync(`${__dirname}/schema/*.gql`);
 const resolvers = mergeResolvers(resolversArray);
 const typeDefs = mergeTypeDefs(typeDefsArray);
 
-console.log(1, typeDefsArray);
-
 const schema = makeExecutableSchema({
   typeDefs,
   resolvers
