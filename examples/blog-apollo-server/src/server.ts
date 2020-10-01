@@ -11,13 +11,19 @@ const typeDefsArray = loadFilesSync(`${__dirname}/schema/*.gql`);
 const resolvers = mergeResolvers(resolversArray);
 const typeDefs = mergeTypeDefs(typeDefsArray);
 
-const schema = makeExecutableSchema({
+import { GraphQLModule } from '@graphql-modules/core';
+
+const graphQlModule = new GraphQLModule({
   typeDefs,
   resolvers
 });
+
 const apollo = new ApolloServer({
-  schema,
-  executor: executor(schema)
+  schema: graphQlModule.schema,
+  context: session => ({
+    session,
+  }),
+  executor: executor(graphQlModule.schema)
 });
 
 apollo.listen({ port: 3000 }).then(() => {
